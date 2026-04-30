@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# curl by bash <(curl -s https://raw.githubusercontent.com/enesyalii/EnesYal-Scripts/e1e9dcc46be8fb8080cefc0313d23acfecdd4ab6/genimgupollinations.sh)
 
 open_latest_image() {
   latest_image=$(find . -maxdepth 1 -type f \( -name 'gen-image*.jpg' -o -name 'generated_image.jpg' \) -printf '%T@ %p\n' 2>/dev/null | sort -nr | head -n 1 | cut -d' ' -f2-)

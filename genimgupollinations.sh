@@ -21,10 +21,42 @@ open_latest_image() {
   fi
 }
 
+generate_image() {
+  local prompt="$1"
+  
+  python3 << 'EOF'
+import requests
+import sys
+from datetime import datetime
+
+prompt = sys.argv[1] if len(sys.argv) > 1 else "abstract art"
+
+# Pollinations AI API endpoint
+url = f"https://image.pollinations.ai/prompt/{prompt}"
+
+try:
+    response = requests.get(url, stream=True)
+    response.raise_for_status()
+    
+    # Generate filename with timestamp
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"gen-image_{timestamp}.jpg"
+    
+    # Save the image
+    with open(filename, 'wb') as f:
+        for chunk in response.iter_content(chunk_size=8192):
+            f.write(chunk)
+    
+    print(f"Image saved: {filename}")
+except Exception as e:
+    print(f"Error generating image: {e}")
+EOF
+}
+
 while true; do
   clear
   echo "===================="
-  echo "      Pollinations AI Curl Generator"
+  echo "   Pollinations AI Image Generator"
   echo "===================="
   echo "1) Generate image"
   echo "2) Show images"
@@ -39,10 +71,10 @@ while true; do
 
       if [[ -z "$prompt" ]]; then
         echo "Using default prompt..."
-        python3 main.py
+        generate_image "abstract art"
       else
         echo "Generating image..."
-        python3 main.py "$prompt"
+        generate_image "$prompt"
       fi
 
       open_latest_image
